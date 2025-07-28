@@ -1,0 +1,12 @@
+[Unit]
+Description=Natzka tunnel-client
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/tunnel-client -c /etc/tunnel-client/config.toml
+DynamicUser=yes
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
