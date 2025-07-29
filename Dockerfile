@@ -5,7 +5,7 @@ RUN apt-get -y update && \
     apt-get -y install curl && \
     rm -rf /var/lib/apt/lists/*
 
-ARG VERSION=v0.1.0_e2f36cb4f9
+ARG VERSION=v0.1.0_30a12d59fc
 ARG TARGETARCH
 RUN curl -L "https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-$TARGETARCH-$VERSION.tar.gz" -o tunnel-client.tar.gz && \
     tar xf tunnel-client.tar.gz
