@@ -118,7 +118,7 @@ jobs:
       - name: Prepare packages
         run: |
           mv tunnel-client.msi tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
-          mv distribution/windows/tunnel-client.tar.gz tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+          zip -j tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.zip distribution/windows/tunnel-client.exe
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
@@ -126,7 +126,7 @@ jobs:
           name: release-windows-bin-${{ matrix.arch }}
           path: |
             tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
-            tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+            tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.zip
 
   release:
     needs:
