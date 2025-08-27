@@ -145,7 +145,7 @@ jobs:
       - name: Extract application version from tag
         id: version
         run: |
-          echo "version=GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Release
         uses: softprops/action-gh-release@v2
