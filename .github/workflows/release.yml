@@ -75,7 +75,7 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: linux-bin-${{ matrix.arch }}
+          name: release-linux-bin-${{ matrix.arch }}
           path: tunnel-client-linux-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
 
   windows-bin:
@@ -90,7 +90,7 @@ jobs:
       - name: Extract application version from tag
         id: version
         run: |
-          echo "version=GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
           echo "msi-version=${GITHUB_REF_NAME:1}" >> "$GITHUB_OUTPUT"
 
       - name: Download tunnel-client binary
@@ -123,7 +123,7 @@ jobs:
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: windows-bin-${{ matrix.arch }}
+          name: release-windows-bin-${{ matrix.arch }}
           path: |
             tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
             tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
@@ -139,6 +139,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           path: artifacts
+          pattern: release-*
           merge-multiple: true
 
       - name: Extract application version from tag
