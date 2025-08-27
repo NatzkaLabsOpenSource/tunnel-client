@@ -118,7 +118,7 @@ jobs:
       - name: Prepare packages
         run: |
           mv tunnel-client.msi tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
-          zip -j tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.zip distribution/windows/tunnel-client.exe
+          7z a -tzip tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.zip ./distribution/windows/tunnel-client.exe
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
