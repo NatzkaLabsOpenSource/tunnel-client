@@ -8,13 +8,14 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  BINARY_VERSION: "v0.1.0_37c506ca13"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
-  docker:
+  linux-docker:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -48,3 +49,103 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args:
+            VERSION=${{ env.BINARY_VERSION }}
+
+  linux-bin:
+    strategy:
+      matrix:
+        arch: [arm64, amd64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract application version from tag
+        id: version
+        run: |
+          echo "version=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Download tunnel-client binary
+        run: |
+          curl -L https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-${{ matrix.arch }}-$BINARY_VERSION.tar.gz \
+            -o tunnel-client-linux-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-bin-${{ matrix.arch }}
+          path: tunnel-client-linux-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+
+  windows-bin:
+    runs-on: windows-2025
+    strategy:
+      matrix:
+        arch: [ amd64 ]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Extract application version from tag
+        id: version
+        run: |
+          echo "version=GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          echo "msi-version=${GITHUB_REF_NAME:1}" >> "$GITHUB_OUTPUT"
+
+      - name: Download tunnel-client binary
+        working-directory: distribution\windows
+        run: |
+          curl -L https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-windows-${{ matrix.arch }}-$BINARY_VERSION.tar.gz -o tunnel-client.tar.gz
+          tar xf tunnel-client.tar.gz
+
+      - name: Download VC Redistributable
+        working-directory: distribution\windows
+        run: |
+          curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o VC_redist.x64.exe
+
+      - name: Advanced Installer
+        uses: Caphyon/advinst-github-action@v2.0
+        with:
+          advinst-version: '21.2.2'
+          advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
+          aip-path: ${{ github.workspace }}\distribution\windows\TunnelClient.aip
+          aip-build-name: DefaultBuild
+          aip-package-name: tunnel-client.msi
+          aip-output-dir: ${{ github.workspace }}
+          aip-commands: SetVersion ${{ steps.version.outputs.msi-version }}
+
+      - name: Prepare packages
+        run: |
+          mv tunnel-client.msi tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
+          mv distribution/windows/tunnel-client.tar.gz tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-bin-${{ matrix.arch }}
+          path: |
+            tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.msi
+            tunnel-client-windows-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+
+  release:
+    needs:
+      - linux-bin
+      - linux-docker
+      - windows-bin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Extract application version from tag
+        id: version
+        run: |
+          echo "version=GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            Container image available via GHCR:
+            `ghcr.io/natzkalabsopensource/tunnel-client:${{ steps.version.outputs.version }}`
+          files: artifacts/*
