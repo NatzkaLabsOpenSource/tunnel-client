@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DICTIONARY type="multilanguage">
+  <ENTRY id="AppInstaller.Control.Text.ExitDialog#Title">
+    <STRING lang="en" value="[ProductName] installed"/>
+  </ENTRY>
+</DICTIONARY>
