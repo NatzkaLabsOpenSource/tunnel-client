@@ -12,7 +12,7 @@ defaults:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  BINARY_VERSION: "v0.1.0_37c506ca13"
+  BINARY_VERSION: "v0.1.0_f125fd740b"
 
 permissions:
   contents: write
@@ -60,6 +60,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, amd64]
+        libc: [glibc, musl]
     runs-on: ubuntu-latest
     steps:
       - name: Extract application version from tag
@@ -69,14 +70,14 @@ jobs:
 
       - name: Download tunnel-client binary
         run: |
-          curl -L https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-${{ matrix.arch }}-$BINARY_VERSION.tar.gz \
-            -o tunnel-client-linux-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+          curl -L https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-${{ matrix.libc }}-${{ matrix.arch }}-$BINARY_VERSION.tar.gz \
+            -o tunnel-client-linux-${{ matrix.libc }}-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: release-linux-bin-${{ matrix.arch }}
-          path: tunnel-client-linux-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
+          name: release-linux-bin-${{ matrix.libc }}-${{ matrix.arch }}
+          path: tunnel-client-linux-${{ matrix.libc }}-${{ matrix.arch }}-${{ steps.version.outputs.version }}.tar.gz
 
   windows-bin:
     runs-on: windows-2025

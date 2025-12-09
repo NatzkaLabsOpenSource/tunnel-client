@@ -5,9 +5,9 @@ RUN apt-get -y update && \
     apt-get -y install curl && \
     rm -rf /var/lib/apt/lists/*
 
-ARG VERSION=v0.1.0_30a12d59fc
+ARG VERSION=v0.1.0_f125fd740b
 ARG TARGETARCH
-RUN curl -L "https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-$TARGETARCH-$VERSION.tar.gz" -o tunnel-client.tar.gz && \
+RUN curl -L "https://cdn.natzkalabs.com/downloads/tunnel-client/tunnel-client-linux-gnu-$TARGETARCH-$VERSION.tar.gz" -o tunnel-client.tar.gz && \
     tar xf tunnel-client.tar.gz
 
 FROM ubuntu:22.04
