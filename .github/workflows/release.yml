@@ -60,7 +60,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, amd64]
-        libc: [glibc, musl]
+        libc: [gnu, musl]
     runs-on: ubuntu-latest
     steps:
       - name: Extract application version from tag
