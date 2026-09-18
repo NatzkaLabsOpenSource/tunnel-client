@@ -106,7 +106,7 @@ jobs:
           curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o VC_redist.x64.exe
 
       - name: Advanced Installer
-        uses: Caphyon/advinst-github-action@v2.0.1
+        uses: NatzkaLabsOpenSource/advinst-github-action@v2.0.3
         with:
           advinst-version: '21.2.2'
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
