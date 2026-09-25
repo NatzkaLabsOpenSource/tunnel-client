@@ -12,7 +12,7 @@ defaults:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  BINARY_VERSION: "v0.1.0_b558f314b8"
+  BINARY_VERSION: "v0.1.0_c651be7051"
 
 permissions:
   contents: write
